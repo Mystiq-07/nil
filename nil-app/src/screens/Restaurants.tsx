@@ -309,14 +309,34 @@ export default function Restaurants() {
           )}
         </div>
       )}
-      {!restaurantsLoading && items.length > 0 && (
-        <div className="section-header">{items.length} restaurant{items.length !== 1 ? 's' : ''} near you</div>
-      )}
-
-      {/* Restaurant cards */}
-      {items.map(r => (
-        <RestaurantCard key={r.id} r={r} onClick={() => selectRestaurant(r)} />
-      ))}
+      {/* Restaurant sections */}
+      {!restaurantsLoading && items.length > 0 && (() => {
+        const isFiltered = q || activeFilterCount > 0 || activeChip !== 'all'
+        if (isFiltered) {
+          return (
+            <>
+              <div className="section-header">{items.length} restaurant{items.length !== 1 ? 's' : ''} found</div>
+              {items.map(r => <RestaurantCard key={r.id} r={r} onClick={() => selectRestaurant(r)} />)}
+            </>
+          )
+        }
+        // Unfiltered: split into Popular + More
+        const sorted = [...items].sort((a, b) => b.rating - a.rating)
+        const popular = sorted.slice(0, 5)
+        const more = sorted.slice(5)
+        return (
+          <>
+            <div className="section-header">Popular near you</div>
+            {popular.map(r => <RestaurantCard key={r.id} r={r} onClick={() => selectRestaurant(r)} />)}
+            {more.length > 0 && (
+              <>
+                <div className="section-header" style={{ marginTop: 4 }}>More options</div>
+                {more.map(r => <RestaurantCard key={r.id} r={r} onClick={() => selectRestaurant(r)} />)}
+              </>
+            )}
+          </>
+        )
+      })()}
 
       <div style={{ height: 10 }} />
 
