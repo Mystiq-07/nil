@@ -766,6 +766,57 @@ body {
   font-size: 13px; color: var(--muted); font-weight: 500;
 }
 
+/* ─── Cart Sheet (slides up above tab bar) ──────── */
+.cart-sheet-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 19;
+}
+.cart-sheet {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: calc(var(--tab-h) + var(--safe-bottom));
+  max-height: 80dvh;
+  background: var(--bg);
+  border-radius: 22px 22px 0 0;
+  z-index: 20;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+}
+.cart-sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--hairline);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.cart-sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px 12px;
+  border-bottom: 0.5px solid var(--hairline);
+  flex-shrink: 0;
+}
+.cart-sheet-title { font-size: 17px; font-weight: 700; color: var(--text-bold); }
+.cart-sheet-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 16px;
+  min-width: 36px; min-height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-sheet-scroll { flex: 1; overflow-y: auto; }
+.cart-sheet-cta {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  border-top: 0.5px solid var(--hairline);
+  background: var(--bg);
+}
+.mc-rest-browse {
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 2px;
+}
+.mc-rest-sub { font-size: 13px; color: var(--muted); }
+
 /* ─── Floating Cart Bar (compact stacked pill) ───── */
 .float-bar-wrap {
   position: absolute;

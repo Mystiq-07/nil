@@ -109,7 +109,7 @@ function groupByCategory(items: MenuItem[]): [string, MenuItem[]][] {
 }
 
 export default function Browse() {
-  const { go, menu, selectedRestaurant, add, setQty, cart, allCarts } = useNil()
+  const { go, menu, selectedRestaurant, add, setQty, cart, allCarts, openCartSheet } = useNil()
   const [q, setQ] = useState('')
   const [sheetItem, setSheetItem] = useState<MenuItem | null>(null)
   const [menuPanelOpen, setMenuPanelOpen] = useState(false)
@@ -307,7 +307,7 @@ export default function Browse() {
 
       {/* Cart bar */}
       {c > 0 && (
-        <div className="cartbar" style={{ bottom: `calc(var(--tab-h) + var(--safe-bottom) + ${8 + overlayH}px)` }} onClick={() => go('cart')}>
+        <div className="cartbar" style={{ bottom: `calc(var(--tab-h) + var(--safe-bottom) + ${8 + overlayH}px)` }} onClick={openCartSheet}>
           <span style={{ fontSize: 12, opacity: 0.9 }}>{c} item{c !== 1 ? 's' : ''} added</span>
           <span style={{ fontSize: 14, fontWeight: 700 }}>View cart</span>
           <span style={{ fontSize: 13, fontWeight: 700 }}>{fmt(restTotal)} →</span>

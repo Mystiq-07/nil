@@ -51,6 +51,7 @@ interface NilContext {
   orderTotalDuration: number | null
   toast: string | null
   nudgeOpen: boolean
+  cartSheetOpen: boolean
   restaurants: Restaurant[]
   restaurantsLoading: boolean
   selectedRestaurant: Restaurant | null
@@ -70,6 +71,8 @@ interface NilContext {
   commitLetGo: () => void
   orderForReal: () => void
   showToast: (m: string) => void
+  openCartSheet: () => void
+  closeCartSheet: () => void
   openNudge: () => void
   closeNudge: () => void
 }
@@ -93,6 +96,7 @@ export function NilProvider({ children }: { children: ReactNode }) {
   const [orderTotalDuration, setOrderTotalDuration] = useState<number | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [nudgeOpen, setNudgeOpen] = useState(false)
+  const [cartSheetOpen, setCartSheetOpen] = useState(false)
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [restaurantsLoading, setRestaurantsLoading] = useState(true)
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null)
@@ -247,14 +251,17 @@ export function NilProvider({ children }: { children: ReactNode }) {
     showToast('Nice. You rode it out.')
   }, [allCarts, pendingTotal, showToast])
 
+  const openCartSheet = useCallback(() => setCartSheetOpen(true), [])
+  const closeCartSheet = useCallback(() => setCartSheetOpen(false), [])
   const openNudge = useCallback(() => setNudgeOpen(true), [])
   const closeNudge = useCallback(() => setNudgeOpen(false), [])
 
   const value: NilContext = {
     screen, theme, cart, allCarts, stats, pendingTotal, orderPlacedAt, orderTotalDuration, toast, nudgeOpen,
-    restaurants, restaurantsLoading, selectedRestaurant, menu,
+    cartSheetOpen, restaurants, restaurantsLoading, selectedRestaurant, menu,
     go, toggleTheme, selectRestaurant, add, setQty, setQtyForRestaurant, clearRestaurantCart, clearAllCarts,
-    count, total, placeOrder, confirmPayment, commitLetGo, orderForReal, showToast, openNudge, closeNudge,
+    count, total, placeOrder, confirmPayment, commitLetGo, orderForReal, showToast,
+    openCartSheet, closeCartSheet, openNudge, closeNudge,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

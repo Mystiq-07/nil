@@ -86,20 +86,22 @@ export function TopBar() {
 // ─── TabBar ──────────────────────────────────────
 
 export function TabBar() {
-  const { screen, go, count } = useNil()
+  const { screen, go, count, openCartSheet } = useNil()
   const c = count()
-  const tab = (name: Screen, label: string, icon: ReactNode, active: boolean) => (
-    <button className={'tab' + (active ? ' active' : '')} onClick={() => go(name)}>
-      {icon}
-      <span>{label}</span>
-      {name === 'cart' && c > 0 && <span className="badge">{c}</span>}
-    </button>
-  )
   return (
     <div className="tabbar">
-      {tab('restaurants', 'Home', <HomeIcon />, screen === 'restaurants' || screen === 'browse')}
-      {c > 0 && tab('cart', 'Cart', <CartIcon />, screen === 'cart')}
-      {tab('you', 'Profile', <UserIcon />, screen === 'you')}
+      <button className={'tab' + (screen === 'restaurants' || screen === 'browse' ? ' active' : '')} onClick={() => go('restaurants')}>
+        <HomeIcon /><span>Home</span>
+      </button>
+      {c > 0 && (
+        <button className="tab" onClick={openCartSheet}>
+          <CartIcon /><span>Cart</span>
+          <span className="badge">{c}</span>
+        </button>
+      )}
+      <button className={'tab' + (screen === 'you' ? ' active' : '')} onClick={() => go('you')}>
+        <UserIcon /><span>Profile</span>
+      </button>
     </div>
   )
 }
@@ -142,7 +144,7 @@ const CUISINE_EMOJI: Record<string, string> = {
 }
 
 export function FloatingCartOverlay() {
-  const { allCarts, go } = useNil()
+  const { allCarts, openCartSheet } = useNil()
   const entries = Object.entries(allCarts)
   if (entries.length === 0) return null
 
@@ -159,7 +161,7 @@ export function FloatingCartOverlay() {
     <div className={'float-bar-wrap' + (isMulti ? ' float-bar-stacked' : '')}>
       {entries.length >= 3 && <div className="float-ghost float-ghost-back" />}
       {isMulti && <div className="float-ghost float-ghost-mid" />}
-      <div className="float-bar-card" onClick={() => go('cart')}>
+      <div className="float-bar-card" onClick={openCartSheet}>
         <div className="float-bar-emoji">{emoji}</div>
         <div className="float-bar-text">
           <div className="float-bar-name">{topCart.restaurant.name}</div>
