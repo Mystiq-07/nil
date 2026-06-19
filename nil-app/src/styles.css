@@ -441,7 +441,7 @@ body {
 .map-placeholder { height: 140px; border-radius: 16px; margin: 0 16px 14px; background: var(--surface); position: relative; overflow: hidden; }
 .map-grid { position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 36px), repeating-linear-gradient(90deg, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 36px); }
 .map-pin { position: absolute; top: 30%; left: 58%; font-size: 22px; transform: translate(-50%, -50%); }
-.map-moped { position: absolute; font-size: 22px; transition: left 1s linear, top 1s linear; }
+.map-moped { position: absolute; font-size: 22px; }
 .tracking-steps { padding: 0 16px; }
 .tracking-step { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--hairline); }
 .step-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; transition: .3s; }

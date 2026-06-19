@@ -30,6 +30,8 @@ export interface Restaurant {
   reviewCount: number
   eta: number
   deliveryFee: number
+  lat: number
+  lon: number
 }
 
 export type Screen = 'onboarding' | 'restaurants' | 'browse' | 'cart' | 'payment' | 'tracking' | 'letgo' | 'you'
