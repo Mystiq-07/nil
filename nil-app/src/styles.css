@@ -766,67 +766,63 @@ body {
   font-size: 13px; color: var(--muted); font-weight: 500;
 }
 
-/* ─── Floating Cart Overlay ─────────────────────── */
-.float-overlay {
-  flex-shrink: 0;
+/* ─── Floating Cart Bar (compact stacked pill) ───── */
+.float-bar-wrap {
+  position: absolute;
+  left: 12px; right: 12px;
+  bottom: calc(var(--tab-h) + var(--safe-bottom) + 8px);
+  z-index: 5;
+}
+.float-bar-stacked {
+  padding-top: 10px; /* room for ghost cards to peek above */
+}
+.float-ghost {
+  position: absolute;
+  border-radius: 18px;
+  border: 0.5px solid var(--hairline);
+  background: var(--surface);
+  top: 0;
+  height: 26px;
+}
+.float-ghost-back {
+  left: 28px; right: 28px;
+  opacity: 0.5;
+}
+.float-ghost-mid {
+  left: 16px; right: 16px;
+  top: 4px;
+  opacity: 0.72;
+}
+.float-bar-card {
+  position: relative; z-index: 1;
   background: var(--bg);
-  border-top: 0.5px solid var(--hairline);
-  padding: 6px 12px 4px;
-  display: flex; flex-direction: column; gap: 6px;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-}
-.float-overlay-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 2px 2px 4px;
-  border-bottom: 0.5px solid var(--hairline);
-  margin-bottom: 2px;
-}
-.float-overlay-title {
-  font-size: 13px; font-weight: 700; color: var(--text-bold);
-}
-.float-checkout-all {
-  background: none; border: none; cursor: pointer;
-  font-size: 12px; font-weight: 700; color: var(--accent);
-  padding: 6px 0;
-}
-.float-cart-row {
+  border: 0.5px solid var(--hairline);
+  border-radius: 18px;
+  padding: 11px 14px;
   display: flex; align-items: center; gap: 10px;
-  padding: 6px 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-.float-cart-row:not(:last-child) {
-  border-bottom: 0.5px solid var(--hairline);
-  padding-bottom: 10px;
-}
-.float-cart-emoji {
+.float-bar-emoji {
   width: 40px; height: 40px; border-radius: 10px;
-  background: var(--surface); border: 0.5px solid var(--hairline);
+  background: var(--surface);
   display: flex; align-items: center; justify-content: center;
   font-size: 22px; flex-shrink: 0;
 }
-.float-cart-info { flex: 1; min-width: 0; }
-.float-cart-name {
-  font-size: 13px; font-weight: 700; color: var(--text-bold);
+.float-bar-text { flex: 1; min-width: 0; }
+.float-bar-name {
+  font-size: 14px; font-weight: 700; color: var(--text-bold);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.float-view-menu {
-  background: none; border: none; cursor: pointer; padding: 0;
-  font-size: 11px; color: var(--muted); font-weight: 500; margin-top: 1px;
+.float-bar-sub {
+  font-size: 12px; color: var(--muted); margin-top: 2px;
 }
-.float-view-cart-btn {
-  display: flex; flex-direction: column; align-items: center;
+.float-bar-btn {
   background: var(--accent); color: #fff;
   border: none; border-radius: 10px;
-  padding: 7px 14px; cursor: pointer; flex-shrink: 0;
-  min-width: 88px;
-}
-.float-view-cart-btn span:first-child { font-size: 12px; font-weight: 700; }
-.float-item-count { font-size: 11px; opacity: 0.85; margin-top: 1px; }
-.float-remove-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--muted); font-size: 14px;
-  min-width: 36px; min-height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  padding: 8px 14px;
+  font: 700 13px Inter, sans-serif;
+  white-space: nowrap; cursor: pointer; flex-shrink: 0;
 }
 
 /* ─── Payment screen ────────────────────────────── */

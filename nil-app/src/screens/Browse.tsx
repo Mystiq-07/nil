@@ -124,11 +124,10 @@ export default function Browse() {
     return t + (item ? item.price * q : 0)
   }, 0)
 
-  // Height of the floating cart overlay so absolute-positioned elements clear it
+  // Amount to push cartbar/FAB above the floating cart bar
+  // Overlay is position:absolute at tab-h+safe-bottom+8px, height ~62px (single) or ~72px (stacked)
   const nOverlayCarts = Object.keys(allCarts).length
-  const overlayH = nOverlayCarts > 0
-    ? 10 + nOverlayCarts * 58 + (nOverlayCarts > 1 ? 30 : 0)
-    : 0
+  const overlayH = nOverlayCarts === 0 ? 0 : nOverlayCarts === 1 ? 70 : 80
 
   const filtered = q ? menu.filter(m => m.name.toLowerCase().includes(q.toLowerCase())) : menu
   const bestsellers = !q ? menu.filter(m => m.bestseller) : []
