@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Node
+nil-app/node_modules/
+nil-app/dist/
+
+# iOS build artifacts (keep source, exclude generated build output & pods)
+nil-app/ios/App/Pods/
+nil-app/ios/App/App.xcworkspace/xcuserdata/
+nil-app/ios/App/build/
+nil-app/ios/DerivedData/
+nil-app/ios/.xcode.env.local
+
+# Android build artifacts
+nil-app/android/.gradle/
+nil-app/android/app/build/
+nil-app/android/build/
+
+# Reference screenshots (50MB, not needed in repo)
+swiggy and zomato images/
+
+# gstack session state
+.gstack/
+
+# Capacitor temp
+nil-app/.capacitor/

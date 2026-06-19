@@ -1,0 +1,12 @@
+{
+  "name": "Nil",
+  "short_name": "nil",
+  "description": "A food app where nothing arrives.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#201C18",
+  "theme_color": "#201C18",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

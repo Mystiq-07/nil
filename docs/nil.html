@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#201C18" />
+<title>nil.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#201C18; --surface:#2A2521; --surface-alt:#332D28; --text:#ECE6DD; --muted:#A89E92;
+    --hairline:rgba(255,255,255,0.10); --accent:#BC7558; --cta:#BC7558; --on-cta:#2A1B12; --money:#8FB39A;
+    --sm:8px; --md:11px; --lg:14px;
+  }
+  [data-theme="light"]{
+    --bg:#FAF8F4; --surface:#FFFFFF; --surface-alt:#F2EEE7; --text:#1C1A17; --muted:#8A847A;
+    --hairline:#ECE7DF; --accent:#BC7558; --cta:#1C1A17; --on-cta:#FAF8F4; --money:#3E6B4E;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; height:100%;}
+  body{
+    background:#100e0c; color:var(--text);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    display:flex; justify-content:center; align-items:stretch;
+  }
+  #app{
+    width:100%; max-width:430px; min-height:100vh; background:var(--bg);
+    position:relative; display:flex; flex-direction:column; overflow:hidden;
+    transition:background .35s ease, color .35s ease;
+  }
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:16px 18px 10px;}
+  .word{font-size:22px; font-weight:500; letter-spacing:-0.5px;}
+  .iconbtn{background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; border-radius:8px; display:flex;}
+  .iconbtn:active{transform:scale(.94);}
+  .screen{display:none; flex:1; flex-direction:column; padding:0 18px 96px; animation:fade .3s ease;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .h1{font-size:28px; font-weight:500; letter-spacing:-0.5px; line-height:1.15;}
+  .h2{font-size:18px; font-weight:500; margin:0;}
+  .muted{color:var(--muted);}
+  .body{font-size:14px; line-height:1.5;}
+  .label{font-size:12px; color:var(--muted);}
+  /* onboarding */
+  #screen-onboarding{justify-content:center; align-items:center; text-align:center; padding:0 30px 40px;}
+  #screen-onboarding .word{font-size:40px; margin-bottom:28px;}
+  #screen-onboarding .lead{font-size:20px; font-weight:500; line-height:1.35; max-width:300px;}
+  #screen-onboarding .sub{font-size:14px; line-height:1.55; color:var(--muted); margin-top:14px; max-width:300px;}
+  /* buttons */
+  .cta{background:var(--cta); color:var(--on-cta); border:none; border-radius:var(--lg);
+    padding:14px 16px; font:500 15px Inter,sans-serif; width:100%; cursor:pointer;}
+  .cta:active{transform:scale(.99);}
+  .textlink{background:none; border:none; color:var(--muted); font:400 12px Inter,sans-serif; cursor:pointer; padding:8px;}
+  /* search */
+  .search{display:flex; align-items:center; gap:8px; background:var(--surface); border-radius:var(--sm);
+    padding:8px 11px; margin:4px 0 12px;}
+  .search input{background:none; border:none; color:var(--text); font:400 13px Inter,sans-serif; width:100%; outline:none;}
+  .search input::placeholder{color:var(--muted);}
+  /* food card */
+  .food{display:flex; align-items:center; gap:11px; padding:9px 0; border-bottom:1px solid var(--hairline);}
+  .thumb{width:46px; height:46px; border-radius:var(--sm); display:flex; align-items:center; justify-content:center; font-size:24px; flex:none;}
+  .food .name{font-size:15px; font-weight:500;}
+  .food .price{font-size:12px; color:var(--muted); margin-top:1px;}
+  .add{margin-left:auto; width:30px; height:30px; border-radius:50%; border:1px solid var(--hairline);
+    background:none; color:var(--accent); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .add:active{transform:scale(.9);}
+  /* cart bar */
+  .cartbar{position:absolute; left:18px; right:18px; bottom:74px; background:var(--accent); color:var(--on-cta);
+    border-radius:var(--lg); padding:12px 16px; display:none; align-items:center; justify-content:space-between;
+    cursor:pointer; font-weight:500; font-size:14px;}
+  [data-theme="light"] .cartbar{background:var(--cta); color:var(--on-cta);}
+  .cartbar.show{display:flex;}
+  /* cart screen */
+  .line{display:flex; align-items:center; justify-content:space-between; padding:8px 0; font-size:14px;}
+  .line .q{display:flex; align-items:center; gap:10px;}
+  .qctl{display:flex; align-items:center; gap:9px;}
+  .qbtn{width:24px; height:24px; border-radius:6px; border:1px solid var(--hairline); background:none; color:var(--text); cursor:pointer; font-size:14px; line-height:1;}
+  .total{display:flex; justify-content:space-between; font-size:15px; font-weight:500; border-top:1px solid var(--hairline); margin-top:8px; padding-top:10px;}
+  .chip{background:var(--surface-alt); border-radius:var(--md); padding:12px; text-align:center; font-size:14px; font-weight:500; margin:16px 0;}
+  /* tracking */
+  #screen-tracking{justify-content:flex-start; padding-top:8px;}
+  .step{display:flex; align-items:center; gap:11px; padding:11px 0;}
+  .dot{width:11px; height:11px; border-radius:50%; border:1.5px solid var(--muted); flex:none;}
+  .dot.done{background:var(--accent); border-color:var(--accent);}
+  .step .t{font-size:14px; color:var(--muted);}
+  .step.on .t{color:var(--text);}
+  .moped{text-align:center; font-size:42px; margin-top:30px; opacity:.5;}
+  /* letgo */
+  #screen-letgo{justify-content:center; align-items:center; text-align:center; padding:0 30px 40px;}
+  .check{width:60px; height:60px; border-radius:50%; border:2px solid var(--money); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; color:var(--money); font-size:30px;}
+  .keptcard{background:var(--surface); border-radius:var(--md); padding:14px 26px; margin-top:24px;}
+  .keptcard .num{font-size:26px; font-weight:500; color:var(--money);}
+  /* you / ledger */
+  .metric{background:var(--surface); border-radius:var(--md); padding:13px 14px; margin-bottom:10px;}
+  .metric .num{font-size:30px; font-weight:500; line-height:1.1; margin-top:2px;}
+  .metric .num.money{color:var(--money);}
+  .lrow{display:flex; align-items:center; gap:9px; padding:6px 0; font-size:12px; color:var(--muted);}
+  .settingrow{display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-top:1px solid var(--hairline); font-size:14px;}
+  /* tabbar */
+  .tabbar{position:absolute; left:0; right:0; bottom:0; height:60px; background:var(--surface);
+    border-top:1px solid var(--hairline); display:none; align-items:center; justify-content:space-around;}
+  .tabbar.show{display:flex;}
+  .tab{background:none; border:none; color:var(--muted); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; position:relative; padding:6px 14px;}
+  .tab.active{color:var(--accent);}
+  .badge{position:absolute; top:0; right:6px; background:var(--accent); color:var(--on-cta); font-size:9px; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px;}
+  /* toast + nudge overlay */
+  .toast{position:absolute; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px); background:var(--surface-alt); color:var(--text);
+    padding:10px 16px; border-radius:var(--md); font-size:13px; opacity:0; transition:.3s; pointer-events:none; white-space:nowrap; box-shadow:0 4px 16px rgba(0,0,0,.25);}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .nudge{position:absolute; inset:0; background:rgba(10,8,6,.72); display:none; flex-direction:column; justify-content:flex-start; padding:60px 16px; z-index:20;}
+  .nudge.show{display:flex; animation:fade .3s ease;}
+  .nudge .time{text-align:center; color:#fff; margin-bottom:22px;}
+  .nudge .time .clock{font-size:48px; font-weight:500; letter-spacing:-1px;}
+  .ncard{background:rgba(255,255,255,.12); backdrop-filter:blur(4px); border-radius:16px; padding:12px; color:#fff;}
+  .ncard .hd{display:flex; align-items:center; gap:7px; margin-bottom:6px; font-size:12px; font-weight:500;}
+  .nmark{width:18px; height:18px; border-radius:6px; background:var(--accent); display:flex; align-items:center; justify-content:center; color:var(--on-cta); font-size:11px; font-weight:500;}
+  .ncard .title{font-size:13px; font-weight:500;}
+  .ncard .desc{font-size:12px; opacity:.85; margin-top:2px;}
+  .center{flex:1; display:flex; flex-direction:column; justify-content:center;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <span class="word">nil<span style="color:var(--accent)">.</span></span>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle theme">
+      <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+    </button>
+  </div>
+
+  <!-- ONBOARDING -->
+  <section id="screen-onboarding" class="screen active">
+    <div class="word" style="font-size:40px;">nil<span style="color:var(--accent)">.</span></div>
+    <div class="lead">A food app where nothing arrives.</div>
+    <div class="sub">Browse it. Cart it. “Order” it. Then nothing comes — and somehow that’s enough.</div>
+    <div style="width:100%; max-width:300px; margin-top:34px;">
+      <button class="cta" onclick="go('browse')">Show me</button>
+      <div style="text-align:center; margin-top:10px;"><span class="label">you can order for real anytime</span></div>
+    </div>
+  </section>
+
+  <!-- BROWSE -->
+  <section id="screen-browse" class="screen">
+    <div class="label" id="greet">you’re up late</div>
+    <div class="h1" style="margin:2px 0 12px;">What are you<br>not-ordering?</div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+      <input id="searchInput" placeholder="biryani, rolls, pizza…" oninput="renderMenu()" />
+    </div>
+    <div id="menu"></div>
+  </section>
+
+  <!-- CART -->
+  <section id="screen-cart" class="screen">
+    <div class="h2" style="margin:2px 0 12px;">Your cart</div>
+    <div id="cartItems"></div>
+    <div id="cartEmpty" class="muted body" style="margin-top:40px; text-align:center;">Nothing in your cart. Yet.</div>
+    <div id="cartFooter" style="margin-top:auto;">
+      <div class="chip">You can have this.<br>Just not right now.</div>
+      <button class="cta" onclick="placeOrder()">Order nothing</button>
+      <div style="text-align:center; margin-top:8px;"><button class="textlink" onclick="orderForReal()">order it for real</button></div>
+    </div>
+  </section>
+
+  <!-- TRACKING -->
+  <section id="screen-tracking" class="screen">
+    <div class="h1" style="margin:6px 0 4px;" id="trackHead">Your nothing is on its way.</div>
+    <div class="label" id="trackEta">arriving in 4 min</div>
+    <div style="margin-top:26px;">
+      <div class="step" id="st0"><span class="dot"></span><span class="t">Preparing your nothing</span></div>
+      <div class="step" id="st1"><span class="dot"></span><span class="t">On its way</span></div>
+      <div class="step" id="st2"><span class="dot"></span><span class="t">Almost there</span></div>
+    </div>
+    <div class="moped">🛵</div>
+  </section>
+
+  <!-- LET IT GO -->
+  <section id="screen-letgo" class="screen">
+    <div class="center">
+      <div class="check">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <div class="h1">Delivered.</div>
+      <div class="body muted" style="margin-top:10px; max-width:260px; margin-left:auto; margin-right:auto;">You wanted the ritual, not the rice.</div>
+      <div class="keptcard">
+        <div class="label">stays in your pocket</div>
+        <div class="num" id="keptNum">₹0</div>
+      </div>
+    </div>
+    <button class="textlink" style="align-self:center; margin-bottom:8px;" onclick="finishLetgo()">done</button>
+  </section>
+
+  <!-- YOU -->
+  <section id="screen-you" class="screen">
+    <div class="h2" style="margin:2px 0 14px;">You</div>
+    <div class="metric"><div class="label">nothing ordered · this month</div><div class="num" id="statCount">0</div></div>
+    <div class="metric"><div class="label">money kept · this month</div><div class="num money" id="statKept">₹0</div></div>
+    <div style="margin-top:10px;">
+      <div class="label" style="margin-bottom:4px;">lately</div>
+      <div id="ledger"></div>
+      <div id="ledgerEmpty" class="muted body">No let-gos yet. The first craving will find you.</div>
+    </div>
+    <div style="margin-top:18px;">
+      <div class="settingrow">
+        <span>Night nudges</span>
+        <button class="textlink" style="color:var(--accent);" onclick="showNudge()">preview</button>
+      </div>
+      <div class="settingrow">
+        <span>Theme</span>
+        <button class="textlink" style="color:var(--accent);" id="themeLabel" onclick="toggleTheme()">Dark</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- cart bar -->
+  <div class="cartbar" id="cartBar" onclick="go('cart')"><span id="cartBarText">View cart</span><span>→</span></div>
+
+  <!-- tabbar -->
+  <div class="tabbar" id="tabbar">
+    <button class="tab" data-screen="browse" onclick="go('browse')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 3h16v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M8 14v7M16 14v7"/></svg>
+      <span>Browse</span>
+    </button>
+    <button class="tab" data-screen="cart" onclick="go('cart')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+      <span>Cart</span><span class="badge" id="tabBadge" style="display:none;">0</span>
+    </button>
+    <button class="tab" data-screen="you" onclick="go('you')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      <span>You</span>
+    </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- night nudge overlay -->
+  <div class="nudge" id="nudge" onclick="hideNudge()">
+    <div class="time"><div style="opacity:.8; font-size:13px;">Tonight</div><div class="clock">11:52</div></div>
+    <div class="ncard">
+      <div class="hd"><span class="nmark">n</span> nil <span style="margin-left:auto; opacity:.7; font-weight:400;">now</span></div>
+      <div class="title">The kitchen’s closing</div>
+      <div class="desc">Still hungry? Scroll it, don’t order it. Ride the wave with us.</div>
+    </div>
+    <div style="text-align:center; color:#fff; opacity:.6; font-size:12px; margin-top:18px;">tap to dismiss</div>
+  </div>
+</div>
+
+<script>
+  var MENU = [
+    {id:'biryani', name:'Chicken biryani', price:320, emoji:'🍛', tone:'#7A3E22'},
+    {id:'roll', name:'Paneer roll', price:140, emoji:'🌯', tone:'#5E4A1E'},
+    {id:'pizza', name:'Margherita pizza', price:260, emoji:'🍕', tone:'#6E2F2C'},
+    {id:'dosa', name:'Masala dosa', price:120, emoji:'🥞', tone:'#6B5320'},
+    {id:'momo', name:'Veg momos', price:130, emoji:'🥟', tone:'#4E4636'},
+    {id:'butter', name:'Butter chicken', price:340, emoji:'🍗', tone:'#7A3E22'},
+    {id:'gulab', name:'Gulab jamun', price:90, emoji:'🍮', tone:'#5E3A22'},
+    {id:'coffee', name:'Cold coffee', price:110, emoji:'🥤', tone:'#4A3A2E'}
+  ];
+
+  var cart = {};
+  var stats = loadStats();
+  var trackTimers = [];
+
+  function loadStats(){
+    try{ var s = JSON.parse(localStorage.getItem('nil_stats')); if(s && typeof s.kept==='number') return s; }catch(e){}
+    return {kept:0, count:0, ledger:[]};
+  }
+  function saveStats(){ try{ localStorage.setItem('nil_stats', JSON.stringify(stats)); }catch(e){} }
+
+  function go(name){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    var el = document.getElementById('screen-'+name);
+    if(el) el.classList.add('active');
+    var showTabs = (name==='browse'||name==='cart'||name==='you');
+    document.getElementById('tabbar').classList.toggle('show', showTabs);
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-screen')===name); });
+    var bar = document.getElementById('cartBar');
+    bar.classList.toggle('show', name==='browse' && cartCount()>0);
+    if(name==='browse') renderMenu();
+    if(name==='cart') renderCart();
+    if(name==='you') renderYou();
+    if(name==='tracking') startTracking();
+    window.scrollTo(0,0);
+  }
+
+  function cartCount(){ var n=0; for(var k in cart) n+=cart[k]; return n; }
+  function cartTotal(){ var t=0; for(var k in cart){ var m=MENU.filter(function(x){return x.id===k;})[0]; if(m) t+=m.price*cart[k]; } return t; }
+
+  function fmt(n){ return '₹'+n.toLocaleString('en-IN'); }
+
+  function renderMenu(){
+    var q = (document.getElementById('searchInput').value||'').toLowerCase();
+    var host = document.getElementById('menu'); host.innerHTML='';
+    MENU.filter(function(m){ return m.name.toLowerCase().indexOf(q)>=0; }).forEach(function(m){
+      var row = document.createElement('div'); row.className='food';
+      row.innerHTML = '<div class="thumb" style="background:'+m.tone+'">'+m.emoji+'</div>'+
+        '<div><div class="name">'+m.name+'</div><div class="price">'+fmt(m.price)+'</div></div>'+
+        '<button class="add" aria-label="add">+</button>';
+      row.querySelector('.add').onclick = function(){ addItem(m.id); };
+      host.appendChild(row);
+    });
+    updateCartBar();
+  }
+
+  function addItem(id){
+    cart[id] = (cart[id]||0)+1;
+    updateCartBar(); toast('Added. Still not real.');
+  }
+  function setQty(id, d){
+    cart[id] = (cart[id]||0)+d;
+    if(cart[id]<=0) delete cart[id];
+    renderCart(); updateCartBar();
+  }
+
+  function updateCartBar(){
+    var c = cartCount();
+    var bar = document.getElementById('cartBar');
+    var onBrowse = document.getElementById('screen-browse').classList.contains('active');
+    bar.classList.toggle('show', onBrowse && c>0);
+    document.getElementById('cartBarText').textContent = 'View cart · '+fmt(cartTotal());
+    var badge = document.getElementById('tabBadge');
+    if(c>0){ badge.style.display='flex'; badge.textContent=c; } else { badge.style.display='none'; }
+  }
+
+  function renderCart(){
+    var host = document.getElementById('cartItems'); host.innerHTML='';
+    var keys = Object.keys(cart);
+    document.getElementById('cartEmpty').style.display = keys.length? 'none':'block';
+    document.getElementById('cartFooter').style.display = keys.length? 'block':'none';
+    keys.forEach(function(id){
+      var m = MENU.filter(function(x){return x.id===id;})[0];
+      var row = document.createElement('div'); row.className='line';
+      row.innerHTML = '<div class="q">'+m.emoji+' &nbsp;'+m.name+'</div>'+
+        '<div class="qctl"><button class="qbtn">−</button><span>'+cart[id]+'</span><button class="qbtn">+</button>'+
+        '<span style="width:54px; text-align:right;">'+fmt(m.price*cart[id])+'</span></div>';
+      var btns = row.querySelectorAll('.qbtn');
+      btns[0].onclick=function(){ setQty(id,-1); };
+      btns[1].onclick=function(){ setQty(id, 1); };
+      host.appendChild(row);
+    });
+    if(keys.length){
+      var tot = document.createElement('div'); tot.className='total';
+      tot.innerHTML = '<span>Total</span><span>'+fmt(cartTotal())+'</span>';
+      host.appendChild(tot);
+    }
+  }
+
+  function orderForReal(){ toast('All yours. We’ll be here.'); }
+
+  var pendingTotal = 0;
+  function placeOrder(){
+    if(cartCount()===0){ go('browse'); return; }
+    pendingTotal = cartTotal();
+    go('tracking');
+  }
+
+  function startTracking(){
+    trackTimers.forEach(clearTimeout); trackTimers=[];
+    ['st0','st1','st2'].forEach(function(id){ var s=document.getElementById(id); s.className='step'; s.querySelector('.dot').className='dot'; });
+    document.getElementById('trackHead').textContent='Your nothing is on its way.';
+    var etas=['arriving in 4 min','arriving in 2 min','almost there'];
+    var i=0; setStep(0);
+    document.getElementById('trackEta').textContent=etas[0];
+    trackTimers.push(setTimeout(function(){ setStep(1); document.getElementById('trackEta').textContent=etas[1]; }, 1800));
+    trackTimers.push(setTimeout(function(){ setStep(2); document.getElementById('trackEta').textContent=etas[2]; }, 3600));
+    trackTimers.push(setTimeout(function(){ goLetgo(); }, 5200));
+  }
+  function setStep(n){
+    for(var k=0;k<=n;k++){ var s=document.getElementById('st'+k); s.classList.add('on'); s.querySelector('.dot').classList.add('done'); }
+    var cur=document.getElementById('st'+n); cur.classList.add('on');
+  }
+
+  function goLetgo(){
+    go('letgo');
+    var target = pendingTotal; var start=0; var t0=null; var dur=900;
+    var el=document.getElementById('keptNum');
+    function tick(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var v=Math.round(start+(target-start)*p); el.textContent=fmt(v); if(p<1) requestAnimationFrame(tick); }
+    requestAnimationFrame(tick);
+  }
+
+  function finishLetgo(){
+    stats.kept += pendingTotal;
+    stats.count += 1;
+    var first = Object.keys(cart)[0];
+    var fm = first? MENU.filter(function(x){return x.id===first;})[0] : null;
+    stats.ledger.unshift({label:'let go of '+(fm?fm.name.toLowerCase():'a craving'), when:whenLabel()});
+    if(stats.ledger.length>12) stats.ledger.pop();
+    saveStats();
+    cart = {}; pendingTotal=0; updateCartBar();
+    go('browse'); toast('Nice. You rode it out.');
+  }
+
+  function whenLabel(){
+    var h=new Date().getHours();
+    if(h>=22||h<5) return 'Tonight';
+    if(h<12) return 'This morning';
+    if(h<17) return 'Today';
+    return 'This evening';
+  }
+
+  function renderYou(){
+    document.getElementById('statCount').textContent = stats.count;
+    document.getElementById('statKept').textContent = fmt(stats.kept);
+    var host=document.getElementById('ledger'); host.innerHTML='';
+    document.getElementById('ledgerEmpty').style.display = stats.ledger.length? 'none':'block';
+    stats.ledger.forEach(function(e){
+      var r=document.createElement('div'); r.className='lrow';
+      r.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg><span>'+e.when+' · '+e.label+'</span>';
+      host.appendChild(r);
+    });
+  }
+
+  function toast(msg){
+    var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._tm); t._tm=setTimeout(function(){ t.classList.remove('show'); }, 1700);
+  }
+
+  function showNudge(){ document.getElementById('nudge').classList.add('show'); }
+  function hideNudge(){ document.getElementById('nudge').classList.remove('show'); }
+
+  function toggleTheme(){
+    var root=document.documentElement;
+    var dark = root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme', dark? 'light':'dark');
+    document.querySelector('meta[name=theme-color]').setAttribute('content', dark? '#FAF8F4':'#201C18');
+    var lbl=document.getElementById('themeLabel'); if(lbl) lbl.textContent = dark? 'Light':'Dark';
+    try{ localStorage.setItem('nil_theme', root.getAttribute('data-theme')); }catch(e){}
+  }
+  document.getElementById('themeBtn').onclick = toggleTheme;
+
+  (function init(){
+    try{ var th=localStorage.getItem('nil_theme'); if(th){ document.documentElement.setAttribute('data-theme', th);
+      document.querySelector('meta[name=theme-color]').setAttribute('content', th==='light'?'#FAF8F4':'#201C18');
+      var lbl=document.getElementById('themeLabel'); if(lbl) lbl.textContent = th==='light'?'Light':'Dark'; } }catch(e){}
+    var h=new Date().getHours();
+    document.getElementById('greet').textContent = (h>=22||h<5)? 'you’re up late' : (h<12? 'good morning' : 'hey there');
+    renderMenu();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nil-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "nil-app", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}
