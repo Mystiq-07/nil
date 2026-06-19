@@ -93,12 +93,6 @@ export function TabBar() {
       <button className={'tab' + (screen === 'restaurants' || screen === 'browse' ? ' active' : '')} onClick={() => go('restaurants')}>
         <HomeIcon /><span>Home</span>
       </button>
-      {c > 0 && (
-        <button className="tab" onClick={openCartSheet}>
-          <CartIcon /><span>Cart</span>
-          <span className="badge">{c}</span>
-        </button>
-      )}
       <button className={'tab' + (screen === 'you' ? ' active' : '')} onClick={() => go('you')}>
         <UserIcon /><span>Profile</span>
       </button>
