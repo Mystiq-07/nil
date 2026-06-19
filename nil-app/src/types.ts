@@ -32,6 +32,6 @@ export interface Restaurant {
   deliveryFee: number
 }
 
-export type Screen = 'onboarding' | 'restaurants' | 'browse' | 'cart' | 'tracking' | 'letgo' | 'you'
+export type Screen = 'onboarding' | 'restaurants' | 'browse' | 'cart' | 'payment' | 'tracking' | 'letgo' | 'you'
 export type Theme = 'dark' | 'light'
 export type Cart = Record<string, number>

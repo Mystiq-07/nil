@@ -109,14 +109,20 @@ function groupByCategory(items: MenuItem[]): [string, MenuItem[]][] {
 }
 
 export default function Browse() {
-  const { count, total, go, menu, selectedRestaurant, add, setQty, cart } = useNil()
+  const { go, menu, selectedRestaurant, add, setQty, cart } = useNil()
   const [q, setQ] = useState('')
   const [sheetItem, setSheetItem] = useState<MenuItem | null>(null)
   const [menuPanelOpen, setMenuPanelOpen] = useState(false)
   const [activeCat, setActiveCat] = useState('Recommended')
   const screenRef = useRef<HTMLElement>(null)
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
-  const c = count()
+
+  // Per-restaurant count and total (not global across all carts)
+  const c = Object.values(cart).reduce((a, b) => a + b, 0)
+  const restTotal = Object.entries(cart).reduce((t, [id, q]) => {
+    const item = menu.find(x => x.id === id)
+    return t + (item ? item.price * q : 0)
+  }, 0)
 
   const filtered = q ? menu.filter(m => m.name.toLowerCase().includes(q.toLowerCase())) : menu
   const bestsellers = !q ? menu.filter(m => m.bestseller) : []
@@ -299,7 +305,7 @@ export default function Browse() {
         <div className="cartbar" onClick={() => go('cart')}>
           <span style={{ fontSize: 12, opacity: 0.9 }}>{c} item{c !== 1 ? 's' : ''} added</span>
           <span style={{ fontSize: 14, fontWeight: 700 }}>View cart</span>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>{fmt(total())} →</span>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>{fmt(restTotal)} →</span>
         </div>
       )}
 

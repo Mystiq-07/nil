@@ -133,6 +133,56 @@ export function NightNudge() {
   )
 }
 
+// ─── Floating Cart Overlay (Zomato-style) ────────
+
+const OVERLAY_CUISINE_EMOJI: Record<string, string> = {
+  'north indian': '🍛', 'south indian': '🥞', italian: '🍕', chinese: '🥟',
+  cafe: '☕', rolls: '🌯', 'multi-cuisine': '🍽️', 'fast food': '🍔',
+  desserts: '🍰', seafood: '🦐', pizza: '🍕', burgers: '🍔',
+}
+
+export function FloatingCartOverlay() {
+  const { allCarts, clearRestaurantCart, selectRestaurant, go } = useNil()
+  const entries = Object.entries(allCarts)
+  if (entries.length === 0) return null
+
+  const totalItems = entries.reduce((sum, [, rc]) =>
+    sum + Object.values(rc.items).reduce((a, b) => a + b, 0), 0)
+
+  return (
+    <div className="float-overlay">
+      {entries.length > 1 && (
+        <div className="float-overlay-header">
+          <span className="float-overlay-title">Your Carts</span>
+          <button className="float-checkout-all" onClick={() => go('cart')}>
+            Checkout all ({totalItems} items) ›
+          </button>
+        </div>
+      )}
+      {entries.map(([restId, rc]) => {
+        const itemCount = Object.values(rc.items).reduce((a, b) => a + b, 0)
+        const emoji = OVERLAY_CUISINE_EMOJI[rc.restaurant.cuisine] ?? '🍽️'
+        return (
+          <div key={restId} className="float-cart-row">
+            <div className="float-cart-emoji">{emoji}</div>
+            <div className="float-cart-info">
+              <div className="float-cart-name">{rc.restaurant.name}</div>
+              <button className="float-view-menu" onClick={() => selectRestaurant(rc.restaurant)}>
+                View Menu ›
+              </button>
+            </div>
+            <button className="float-view-cart-btn" onClick={() => go('cart')}>
+              <span>View Cart</span>
+              <span className="float-item-count">{itemCount} item{itemCount !== 1 ? 's' : ''}</span>
+            </button>
+            <button className="float-remove-btn" onClick={() => clearRestaurantCart(restId)}>✕</button>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── SearchIcon export for screens ───────────────
 
 export { SearchIcon }
