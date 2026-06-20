@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNil } from '../store'
+import { fmt } from '../util'
 
 const PHASES = [
   { label: 'Order confirmed', sub: 'Restaurant is preparing your order', icon: '🧑‍🍳' },
@@ -12,8 +13,6 @@ const RIDER_NAMES = ['Ravi K.', 'Suresh M.', 'Arjun P.', 'Deepak R.', 'Kiran S.'
 const PIN_X = 58
 const PIN_Y = 30
 
-const AX0 = 4, AY0 = 5, AX1 = 50, AY1 = 3, AX2 = 96, AY2 = 33
-
 function etaText(ms: number): string {
   const mins = Math.ceil(ms / 60_000)
   if (mins <= 0) return 'Arriving now'
@@ -21,25 +20,15 @@ function etaText(ms: number): string {
   return `${mins} mins away`
 }
 
-function fmtElapsed(ms: number): string {
-  const s = Math.floor(ms / 1000)
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
-}
-
 function bez(t: number, p0: number, p1: number, p2: number, p3: number) {
   const u = 1 - t
   return u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3
 }
 
-function qbez(t: number, p0: number, p1: number, p2: number) {
-  const u = 1 - t
-  return u * u * p0 + 2 * u * t * p1 + t * t * p2
-}
 
 export default function Tracking() {
-  const { orderPlacedAt, orderTotalDuration, go } = useNil()
+  const { orderPlacedAt, orderTotalDuration, go, allCarts } = useNil()
   const [progress, setProgress] = useState(0)
-  const [elapsed, setElapsed] = useState(0)
   const rafRef = useRef<number>(0)
   const [riderName] = useState(() => RIDER_NAMES[Math.floor(Math.random() * RIDER_NAMES.length)])
 
@@ -59,7 +48,6 @@ export default function Tracking() {
       const el = Date.now() - orderPlacedAt
       const p = Math.min(1, el / orderTotalDuration)
       setProgress(p)
-      setElapsed(el)
       if (p >= 0.9) { go('letgo'); return }
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -68,7 +56,7 @@ export default function Tracking() {
   }, [orderPlacedAt, orderTotalDuration, go])
 
   const remainingMs = orderPlacedAt && orderTotalDuration
-    ? Math.max(0, orderTotalDuration - elapsed)
+    ? Math.max(0, orderTotalDuration - (Date.now() - orderPlacedAt))
     : 0
 
   const phaseIndex = progress < 0.35 ? 0 : progress < 0.7 ? 1 : 2
@@ -77,9 +65,17 @@ export default function Tracking() {
   const mopedX = bez(mopedT, route.sx, route.cx1, route.cx2, PIN_X)
   const mopedY = bez(mopedT, route.sy, route.cy1, route.cy2, PIN_Y)
 
-  const arcT = Math.min(progress, 0.98)
-  const arcDotX = qbez(arcT, AX0, AX1, AX2)
-  const arcDotY = qbez(arcT, AY0, AY1, AY2)
+  // Build order summary from allCarts
+  const cartEntries = Object.values(allCarts)
+  const totalItems = cartEntries.reduce((s, rc) => s + Object.values(rc.items).reduce((a, b) => a + b, 0), 0)
+  const grandTotal = cartEntries.reduce((s, rc) =>
+    s + Object.entries(rc.items).reduce((a, [id, qty]) => {
+      const m = rc.menu.find(x => x.id === id)
+      return a + (m ? m.price * qty : 0)
+    }, 0), 0)
+  const topCart = cartEntries[0]
+  const topItemId = topCart ? Object.keys(topCart.items)[0] : null
+  const topItem = topItemId ? topCart.menu.find(x => x.id === topItemId) : null
 
   return (
     <section className="screen tracking-screen">
@@ -141,27 +137,23 @@ export default function Tracking() {
         <button className="rider-call" aria-label="Call rider">📞</button>
       </div>
 
-      <div className="arc-section">
-        <svg viewBox="0 0 100 38" preserveAspectRatio="none" className="arc-svg">
-          <path
-            d={`M ${AX0} ${AY0} Q ${AX1} ${AY1} ${AX2} ${AY2}`}
-            fill="none"
-            stroke="var(--hairline)"
-            strokeWidth="1.5"
-          />
-          <path
-            d={`M ${AX0} ${AY0} Q ${AX1} ${AY1} ${AX2} ${AY2}`}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth="1.5"
-            pathLength="1"
-            strokeDasharray="1"
-            strokeDashoffset={1 - arcT}
-          />
-          <circle cx={arcDotX} cy={arcDotY} r="2.8" fill="var(--accent)" />
-        </svg>
-        <div className="arc-timer">{fmtElapsed(elapsed)}</div>
-      </div>
+      {topCart && (
+        <div className="order-summary-card">
+          <div className="order-summary-top">
+            <span className="order-summary-rest">{topCart.restaurant.name}</span>
+            {cartEntries.length > 1 && (
+              <span className="order-summary-more">+{cartEntries.length - 1} more</span>
+            )}
+          </div>
+          <div className="order-summary-row">
+            <span className="order-summary-detail">
+              {topItem ? topItem.emoji : '🍽️'} {topItem?.name ?? ''}
+              {totalItems > 1 ? ` + ${totalItems - 1} more item${totalItems > 2 ? 's' : ''}` : ''}
+            </span>
+            <span className="order-summary-total">{fmt(grandTotal)}</span>
+          </div>
+        </div>
+      )}
 
       <div className="tracking-footer">
         <button
