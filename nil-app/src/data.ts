@@ -35,7 +35,7 @@ const NORTH_INDIAN: MenuItem[] = [
   { id: 'ni-bry-2', name: 'Mutton Biryani', price: 420, emoji: '🍛', tone: '#6B3A1E', category: 'Biryani & Rice', description: 'Tender lamb pieces layered in fragrant saffron rice. Cooked dum style.' },
   { id: 'ni-bry-3', name: 'Veg Biryani', price: 240, emoji: '🍛', tone: '#3A6B3A', category: 'Biryani & Rice', description: 'Garden vegetables with saffron basmati, fresh mint and fried cashews.' },
   { id: 'ni-bry-4', name: 'Egg Biryani', price: 260, emoji: '🥚', tone: '#6B5320', category: 'Biryani & Rice', description: 'Spiced biryani with whole boiled eggs. A weekday favourite.' },
-  { id: 'ni-bry-5', name: 'Hyderabadi Biryani', price: 360, emoji: '🍛', tone: '#7A3E22', category: 'Biryani & Rice', description: 'Dum-style rice sealed with dough for maximum flavour absorption.' },
+  { id: 'ni-bry-5', name: 'Hyderabadi Biryani', price: 360, emoji: '🍛', tone: '#7A3E22', category: 'Biryani & Rice', description: 'Dum-style rice sealed with dough for maximum flavour absorption.', veg: false },
   { id: 'ni-bry-6', name: 'Jeera Rice', price: 120, emoji: '🍚', tone: '#6B5320', category: 'Biryani & Rice', description: 'Fragrant cumin-tempered basmati. The right pairing for any gravy.' },
   // Breads
   { id: 'ni-br-1', name: 'Butter Naan', price: 60, emoji: '🫓', tone: '#6B5320', category: 'Breads', description: 'Leavened bread straight from the tandoor, brushed generously with butter.' },
@@ -275,9 +275,10 @@ const NAME_HINTS: [RegExp, string][] = [
   [/roll|kathi/i, 'rolls'],
 ]
 
-const NON_VEG_RE = /chicken|mutton|lamb|fish|prawn|shrimp|egg|bacon|beef|pork|pepperoni|keema|meat|seafood|tikka(?!.*paneer)/i
+const NON_VEG_RE = /chicken|mutton|lamb|fish|prawn|shrimp|egg|bacon|beef|pork|pepperoni|keema|meat|seafood|tikka|seekh/i
 
 function isVeg(name: string): boolean {
+  if (/paneer/i.test(name)) return true
   return !NON_VEG_RE.test(name)
 }
 

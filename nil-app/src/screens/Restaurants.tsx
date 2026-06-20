@@ -43,6 +43,17 @@ const CUISINE_CHIPS = [
   { key: 'rolls', label: 'Rolls', emoji: '🌯' },
 ]
 
+const CHIP_ALIASES: Record<string, string[]> = {
+  'north indian': ['north indian', 'mughlai', 'biryani'],
+  'italian': ['italian', 'pizza'],
+  'south indian': ['south indian', 'dosa', 'udupi'],
+  'chinese': ['chinese', 'asian'],
+  'cafe': ['cafe', 'bakery', 'dessert', 'coffee_shop'],
+  'rolls': ['rolls', 'kathi'],
+}
+
+const SEARCH_SUGGESTIONS = ['Biryani', 'Pizza', 'Dosa', 'Momos', 'Noodles', 'Cafe', 'Burger', 'Rolls']
+
 const OFFERS = [
   '50% OFF up to ₹100',
   'Flat ₹40 OFF above ₹199',
@@ -50,6 +61,8 @@ const OFFERS = [
   'Flat ₹50 OFF above ₹149',
   'Items starting ₹79',
   '30% OFF up to ₹75',
+  '₹60 OFF above ₹299',
+  'Buy 2 Get 1 FREE',
 ]
 
 const SORT_OPTIONS = [
@@ -68,7 +81,6 @@ function hashStr(s: string): number {
 }
 
 function getOffer(r: Restaurant): string {
-  if (r.deliveryFee === 0) return 'FREE delivery'
   return OFFERS[hashStr(r.id) % OFFERS.length]
 }
 
@@ -99,14 +111,8 @@ function RestaurantCard({ r, onClick }: { r: Restaurant; onClick: () => void }) 
           <span className="meta-sep">·</span>
           <span className="meta-txt">{r.eta}–{r.eta + 10} mins</span>
           {isFast && <><span className="meta-sep">·</span><span className="fast-tag">⚡ Fast</span></>}
-        </div>
-        <div className="rest-footer-row">
+          <span className="meta-sep">·</span>
           <span className="rest-cuisine">{cuisineLabel}</span>
-          <span className="rest-fee">
-            {r.deliveryFee === 0
-              ? <span style={{ color: 'var(--money)' }}>Free delivery</span>
-              : `₹${r.deliveryFee} delivery`}
-          </span>
         </div>
       </div>
     </div>
@@ -193,27 +199,25 @@ export default function Restaurants() {
   const [sort, setSort] = useState<SortKey>('default')
   const [minRating, setMinRating] = useState(0)
   const [fastOnly, setFastOnly] = useState(false)
-  const [freeDelivery, setFreeDelivery] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
 
-  const activeFilterCount = (sort !== 'default' ? 1 : 0) + (minRating > 0 ? 1 : 0) + (fastOnly ? 1 : 0) + (freeDelivery ? 1 : 0)
+  const activeFilterCount = (sort !== 'default' ? 1 : 0) + (minRating > 0 ? 1 : 0) + (fastOnly ? 1 : 0)
 
   const resetFilters = () => {
     setSort('default')
     setMinRating(0)
     setFastOnly(false)
-    setFreeDelivery(false)
   }
 
   const items = restaurants
     .filter(r => {
       const lq = q.toLowerCase()
       const matchQ = !q || r.name.toLowerCase().includes(lq) || r.cuisine.toLowerCase().includes(lq)
-      const matchChip = activeChip === 'all' || r.cuisine === activeChip
+      const aliases = CHIP_ALIASES[activeChip] ?? [activeChip]
+      const matchChip = activeChip === 'all' || aliases.includes(r.cuisine)
       const matchRating = r.rating >= minRating
       const matchFast = !fastOnly || r.eta <= 30
-      const matchFee = !freeDelivery || r.deliveryFee === 0
-      return matchQ && matchChip && matchRating && matchFast && matchFee
+      return matchQ && matchChip && matchRating && matchFast
     })
     .sort((a, b) => {
       if (sort === 'rating') return b.rating - a.rating
@@ -243,6 +247,18 @@ export default function Restaurants() {
         )}
       </div>
 
+      {/* Search suggestions */}
+      {!q && (
+        <div className="search-suggestions">
+          <span className="search-suggestions-label">Try</span>
+          {SEARCH_SUGGESTIONS.map(s => (
+            <button key={s} className="search-suggestion-pill" onClick={() => setQ(s)}>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Cuisine circles */}
       <div className="cuisine-chips">
         {CUISINE_CHIPS.map(c => (
@@ -271,12 +287,6 @@ export default function Restaurants() {
           onClick={() => setFastOnly(v => !v)}
         >
           ⚡ Near &amp; Fast
-        </div>
-        <div
-          className={'filter-pill' + (freeDelivery ? ' active' : '')}
-          onClick={() => setFreeDelivery(v => !v)}
-        >
-          Free delivery
         </div>
         <div
           className={'filter-pill' + (minRating >= 4 ? ' active' : '')}
@@ -346,7 +356,7 @@ export default function Restaurants() {
           sort={sort} setSort={setSort}
           minRating={minRating} setMinRating={setMinRating}
           fastOnly={fastOnly} setFastOnly={setFastOnly}
-          freeDelivery={freeDelivery} setFreeDelivery={setFreeDelivery}
+          freeDelivery={false} setFreeDelivery={() => {}}
           onClose={() => setFilterOpen(false)}
           onReset={resetFilters}
         />

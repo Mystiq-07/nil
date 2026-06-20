@@ -21,7 +21,6 @@ function ItemSheet({ item, onClose, onAdd }: { item: MenuItem; onClose: () => vo
         <div className="sheet-body">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <VegBox veg={veg} />
-            {item.bestseller && <span className="best-tag">★★ Bestseller</span>}
           </div>
           <div className="sheet-name">{item.name}</div>
           {item.description && <div className="sheet-desc">{item.description}</div>}
@@ -67,20 +66,21 @@ function FoodCard({ item, qty, onTap, onAdd }: {
       <div className="food-card-photo" style={{ background: item.tone + '33' }}>
         <div className="food-card-vegbox"><VegBox veg={veg} /></div>
         <span>{item.emoji}</span>
-        {qty > 0 ? (
-          <div className="food-card-stepper" onClick={e => e.stopPropagation()}>
-            <button className="stepper-btn" onClick={() => setQty(item.id, -1)}>−</button>
-            <span className="stepper-num">{qty}</span>
-            <button className="stepper-btn" onClick={onAdd}>+</button>
-          </div>
-        ) : (
-          <button className="food-card-add" onClick={e => { e.stopPropagation(); onAdd() }}>ADD +</button>
-        )}
       </div>
       <div className="food-card-body">
-        {item.bestseller && <div className="best-tag" style={{ marginBottom: 4 }}>★★ Bestseller</div>}
         <div className="food-card-name">{item.name}</div>
-        <div className="food-card-price">{fmt(item.price)}</div>
+        <div className="food-card-footer-row">
+          <div className="food-card-price">{fmt(item.price)}</div>
+          {qty > 0 ? (
+            <div className="food-card-stepper-inline" onClick={e => e.stopPropagation()}>
+              <button className="stepper-btn" onClick={() => setQty(item.id, -1)}>−</button>
+              <span className="stepper-num">{qty}</span>
+              <button className="stepper-btn" onClick={onAdd}>+</button>
+            </div>
+          ) : (
+            <button className="food-card-add-btn" onClick={e => { e.stopPropagation(); onAdd() }}>ADD</button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -109,7 +109,7 @@ function groupByCategory(items: MenuItem[]): [string, MenuItem[]][] {
 }
 
 export default function Browse() {
-  const { go, menu, selectedRestaurant, add, setQty, cart, allCarts, openCartSheet } = useNil()
+  const { go, menu, selectedRestaurant, add, setQty, cart, allCarts } = useNil()
   const [q, setQ] = useState('')
   const [sheetItem, setSheetItem] = useState<MenuItem | null>(null)
   const [menuPanelOpen, setMenuPanelOpen] = useState(false)
@@ -117,14 +117,7 @@ export default function Browse() {
   const screenRef = useRef<HTMLElement>(null)
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
-  // Per-restaurant count and total (not global across all carts)
-  const c = Object.values(cart).reduce((a, b) => a + b, 0)
-  const restTotal = Object.entries(cart).reduce((t, [id, q]) => {
-    const item = menu.find(x => x.id === id)
-    return t + (item ? item.price * q : 0)
-  }, 0)
-
-  // Amount to push cartbar/FAB above the floating cart bar
+  // Amount to push FAB above the floating cart bar
   // Overlay is position:absolute at tab-h+safe-bottom+8px, height ~62px (single) or ~72px (stacked)
   const nOverlayCarts = Object.keys(allCarts).length
   const overlayH = nOverlayCarts === 0 ? 0 : nOverlayCarts === 1 ? 70 : 80
@@ -166,7 +159,7 @@ export default function Browse() {
       <section
         ref={screenRef}
         className="screen"
-        style={{ paddingBottom: c > 0 ? `calc(var(--chrome-bottom) + ${68 + overlayH}px)` : `calc(var(--chrome-bottom) + ${overlayH}px)` }}
+        style={{ paddingBottom: `calc(var(--chrome-bottom) + ${overlayH}px)` }}
       >
         {/* Restaurant info */}
         {selectedRestaurant && (
@@ -176,10 +169,6 @@ export default function Browse() {
               <span className="rating-badge">★ {selectedRestaurant.rating.toFixed(1)}</span>
               <span className="meta-sep">·</span>
               <span className="meta-txt">{selectedRestaurant.eta}–{selectedRestaurant.eta + 10} mins</span>
-              <span className="meta-sep">·</span>
-              <span className="meta-txt">
-                {selectedRestaurant.deliveryFee === 0 ? 'Free delivery' : `₹${selectedRestaurant.deliveryFee} delivery`}
-              </span>
             </div>
           </div>
         )}
@@ -289,11 +278,11 @@ export default function Browse() {
         <div style={{ height: 80 }} />
       </section>
 
-      {/* Floating Menu button — floats above cart bar + overlay when items exist */}
+      {/* Floating Menu button */}
       {!menuPanelOpen && (
         <button
           className="menu-fab"
-          style={{ bottom: `calc(var(--tab-h) + var(--safe-bottom) + ${c > 0 ? `${82 + overlayH}px` : `${14 + overlayH}px`})` }}
+          style={{ bottom: `calc(var(--tab-h) + var(--safe-bottom) + ${14 + overlayH}px)` }}
           onClick={() => setMenuPanelOpen(true)}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -303,15 +292,6 @@ export default function Browse() {
           </svg>
           Menu
         </button>
-      )}
-
-      {/* Cart bar */}
-      {c > 0 && (
-        <div className="cartbar" style={{ bottom: `calc(var(--tab-h) + var(--safe-bottom) + ${8 + overlayH}px)` }} onClick={openCartSheet}>
-          <span style={{ fontSize: 12, opacity: 0.9 }}>{c} item{c !== 1 ? 's' : ''} added</span>
-          <span style={{ fontSize: 14, fontWeight: 700 }}>View cart</span>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>{fmt(restTotal)} →</span>
-        </div>
       )}
 
       {/* Item detail sheet */}
@@ -345,7 +325,6 @@ function FoodRow({ item, qty, onTap, onAdd }: {
     <div className="food-item-row" style={{ cursor: 'pointer' }} onClick={onTap}>
       <div className="food-item-left">
         <VegBox veg={veg} />
-        {item.bestseller && <div className="best-tag">★★ Bestseller</div>}
         <div className="food-item-name">{item.name}</div>
         {item.description && <div className="food-item-desc">{item.description}</div>}
         <div className="food-item-price">{fmt(item.price)}</div>

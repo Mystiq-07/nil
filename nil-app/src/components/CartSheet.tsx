@@ -148,11 +148,6 @@ export default function CartSheet() {
             <div className="billing-total"><span>To pay</span><span>{fmt(grandTotal)}</span></div>
           </div>
 
-          <div className="cart-ritual-msg">
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bold)', marginBottom: 3 }}>You can have this.</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>Just not right now. Ride it out.</div>
-          </div>
-
           <div style={{ height: 8 }} />
         </div>
 
@@ -161,7 +156,6 @@ export default function CartSheet() {
           <button className="cta" onClick={handlePlaceOrder}>
             Place order{cartEntries.length > 1 ? ' for all' : ''} · {fmt(grandTotal)}
           </button>
-          <button className="textlink order-for-real-link" onClick={orderForReal}>order it for real instead</button>
         </div>
       </div>
     </>

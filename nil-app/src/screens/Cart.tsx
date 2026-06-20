@@ -143,18 +143,11 @@ export default function Cart() {
         </div>
       </div>
 
-      {/* Ritual message */}
-      <div className="cart-ritual-msg">
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bold)', marginBottom: 3 }}>You can have this.</div>
-        <div style={{ fontSize: 12, color: 'var(--muted)' }}>Just not right now. Ride it out.</div>
-      </div>
-
       {/* Sticky bottom CTA */}
       <div className="cart-cta-sticky">
         <button className="cta" onClick={() => placeOrder(grandTotal)}>
           Place order{cartEntries.length > 1 ? ' for all' : ''} · {fmt(grandTotal)}
         </button>
-        <button className="textlink order-for-real-link" onClick={orderForReal}>order it for real instead</button>
       </div>
 
     </section>
