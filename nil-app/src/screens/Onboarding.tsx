@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNil } from '../store'
 
 function IllustrationMoon() {
@@ -116,12 +116,6 @@ export default function Onboarding() {
     setAnimKey(k => k + 1)
     setStep(next)
   }
-
-  useEffect(() => {
-    if (step >= STEPS.length - 1) return
-    const t = setTimeout(() => navigate(step + 1), 5000)
-    return () => clearTimeout(t)
-  }, [step])
 
   const { title, body, Illustration } = STEPS[step]
   const last = step === STEPS.length - 1
